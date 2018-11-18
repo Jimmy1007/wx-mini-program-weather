@@ -24,7 +24,9 @@ Page({
     nowTemp: '',
     nowWeather: '',
     nowWeatherBackground: "",
-    hourlyWeather: []
+    hourlyWeather: [],
+    todayTemp: '',
+    todayDate: '',
   },
   onLoad(){
     this.getNow()
@@ -33,15 +35,14 @@ Page({
     wx.request({
       url: 'https://test-miniprogram.com/api/weather/now',
       data: {        
-        city: '西安市',
+        city: '武汉市',
       },
       success:res=> {
         console.log(res)
         let result = res.data.result
-       this.setNow(result)
-       this.setHourlyWeather(result)
-
-        
+        this.setNow(result)
+        this.setHourlyWeather(result)
+        this.setToday(result)
       },
       complete:()=>{
         callback && callback()
@@ -77,5 +78,16 @@ Page({
     this.setData({
       hourlyWeather: hourlyWeather
     })
+  },
+  setToday(result){
+    let date=new Date()
+    this.setData({
+      todayTemp: `${result.today.minTemp}°-${result.today.maxTemp}°`,
+      todayDate: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}  今天`
+      //`和'是不一样的，"hello" + str + "world !"==`hello ${str} world !`
+    })
+  },
+  onTapDayWeather(){
+    wx.showToast()
   }
 })
