@@ -107,8 +107,10 @@ Page({
             longitude: res.longitude
           },
           success: res => {
-            let city = res.result.address_component.city
-            console.log(city)
+              console.log(res.result.address_component.city)
+          },
+          fail:err=>{
+            console.log("err",err);
           }
         })
       },
