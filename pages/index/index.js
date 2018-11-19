@@ -6,6 +6,7 @@ const weatherMap = {
   'heavyrain': '大雨',
   'snow': '雪'
 }
+const QQMapWX = require('../../libs/qqmap-wx-jssdk.js')
 const weatherColorMap = {
   'sunny': '#cbeefd',
   'cloudy': '#deeef6',
@@ -29,6 +30,9 @@ Page({
     todayDate: '',
   },
   onLoad(){
+    this.qqmapsdk = new QQMapWX({
+      key:'HVTBZ-GBF3U-YN7VP-4LYJY-OTPIH-ZZFPU'
+    }),
     this.getNow()
   },
   getNow(callback){
@@ -91,6 +95,23 @@ Page({
     wx.showToast()
     wx.navigateTo({
       url:'/pages/list/list'
+    })
+  },
+  onTapLocation() {
+    wx.getLocation({
+      success: res => {
+        console.log(res.latitude, res.longitude)
+        this.qqmapsdk.reverseGeocoder({
+          location: {
+            latitude: res.latitude,
+            longitude: res.longitude
+          },
+          success: res => {
+            let city = res.result.address_component.city
+            console.log(city)
+          }
+        })
+      },
     })
   }
 })
