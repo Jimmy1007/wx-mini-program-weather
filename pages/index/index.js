@@ -31,7 +31,7 @@ Page({
     hourlyWeather: [],
     todayTemp: '',
     todayDate: '',
-    city: '西安市',
+    city: '武汉市',
     locationAuthType: UNPROMPTED,
     locationTipsText: UNPROMPTED_TIPS
   },
@@ -45,6 +45,22 @@ Page({
       key:'HVTBZ-GBF3U-YN7VP-4LYJY-OTPIH-ZZFPU'
     }),
     this.getNow()
+  },
+  onShow() {
+    wx.getSetting({
+      success: res => {
+        let auth = res.authSetting['scope.userLocation']
+        if (auth && this.data.locationAuthType != AUTHORIZED) {
+          //权限从无到有
+          this.setData({
+            locationAuthType: AUTHORIZED,
+            locationTipsText: AUTHORIZED_TIPS
+          })
+          this.getLocation()
+        }
+        //权限从有到无未处理
+      }
+    })
   },
   getNow(callback){
     wx.request({
@@ -108,7 +124,10 @@ Page({
     })
   },
   onTapLocation() {
-    this.getLocation()
+    if (this.data.locationAuthType === UNAUTHORIZED)
+      wx.openSetting()
+    else
+      this.getLocation()
   },
   getLocation(){
     wx.getLocation({
@@ -128,7 +147,6 @@ Page({
             console.log(city)
             this.setData({
               city: city,
-              locationTipsText: ""
             }),
             this.getNow()
           },
