@@ -16,18 +16,20 @@ const weatherColorMap = {
   'snow': '#aae1fc'
 }
 Page({
-  noPullDownRegresh(){
-    this.getNow(()=>{
-      wx.stopPullDownRefresh()
-    })
-  },
-  data:{
+  data: {
     nowTemp: '',
     nowWeather: '',
     nowWeatherBackground: "",
     hourlyWeather: [],
     todayTemp: '',
     todayDate: '',
+    city: '西安市',
+    locationTipsText: "点击获取当前位置"
+  },
+  onPullDownRegresh(){
+    this.getNow(()=>{
+      wx.stopPullDownRefresh()
+    })
   },
   onLoad(){
     this.qqmapsdk = new QQMapWX({
@@ -39,10 +41,9 @@ Page({
     wx.request({
       url: 'https://test-miniprogram.com/api/weather/now',
       data: {        
-        city: '武汉市',
+        city: this.data.city
       },
       success:res=> {
-        console.log(res)
         let result = res.data.result
         this.setNow(result)
         this.setHourlyWeather(result)
@@ -94,20 +95,26 @@ Page({
   onTapDayWeather(){
     wx.showToast()
     wx.navigateTo({
-      url:'/pages/list/list'
+      url:'/pages/list/list?city='+this.data.city,
     })
   },
   onTapLocation() {
     wx.getLocation({
       success: res => {
-        console.log(res.latitude, res.longitude)
+        //console.log(res.latitude, res.longitude)
         this.qqmapsdk.reverseGeocoder({
           location: {
             latitude: res.latitude,
             longitude: res.longitude
           },
           success: res => {
-              console.log(res.result.address_component.city)
+            let city = res.result.address_component.city
+            console.log(city)
+            this.setData({
+              city: city,
+              locationTipsText: ""
+            }),
+            this.getNow()
           },
           fail:err=>{
             console.log("err",err);
