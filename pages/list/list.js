@@ -24,7 +24,7 @@ Page({
       },
       success: res=>{
         let result=res.data.result
-        console.log(result)
+        //console.log(result)
         this.setWeekWeather(result)
       },
       complete: () => {
