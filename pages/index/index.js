@@ -46,22 +46,6 @@ Page({
     }),
     this.getNow()
   },
-  onShow() {
-    wx.getSetting({
-      success: res => {
-        let auth = res.authSetting['scope.userLocation']
-        if (auth && this.data.locationAuthType != AUTHORIZED) {
-          //权限从无到有
-          this.setData({
-            locationAuthType: AUTHORIZED,
-            locationTipsText: AUTHORIZED_TIPS
-          })
-          this.getLocation()
-        }
-        //权限从有到无未处理
-      }
-    })
-  },
   getNow(callback){
     wx.request({
       url: 'https://test-miniprogram.com/api/weather/now',
@@ -125,7 +109,15 @@ Page({
   },
   onTapLocation() {
     if (this.data.locationAuthType === UNAUTHORIZED)
-      wx.openSetting()
+      wx.getSetting({
+        success: res=>{
+          let auth = res.authSetting["scope.userLocation"]
+          if (auth) {
+            this.getLocation()
+          }
+         // console.log(res)
+        }
+      })
     else
       this.getLocation()
   },
